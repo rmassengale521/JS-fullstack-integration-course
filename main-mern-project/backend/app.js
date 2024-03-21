@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes')
@@ -28,4 +29,10 @@ app.use((err, req, res, next) => {
     })
 })
 
-app.listen(5000)
+mongoose.connect('mongodb+srv://mernprojectuser:r7i5gtOxxVGA3F2M@cluster0.hvmdtyd.mongodb.net/reactPlaces?retryWrites=true&w=majority&appName=Cluster0')
+    .then(() => {
+        app.listen(5000)
+    })
+    .catch((err) => {
+        console.error(err);
+    })

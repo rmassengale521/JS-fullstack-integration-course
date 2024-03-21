@@ -25,6 +25,10 @@ router.post('/signup',
     signup)
 
 // POST api/users/login
-router.post('/login', login)
+router.post('/login',
+    check('email')
+        .normalizeEmail()
+        .isEmail(),
+    login)
 
 module.exports = router
