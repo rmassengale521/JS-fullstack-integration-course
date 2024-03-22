@@ -1,15 +1,23 @@
 import React, { useContext, useState } from "react";
 
 import { useForm } from "../../shared/hooks/form-hook";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
+
 import Card from "../../shared/components/UIElements/Card";
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
+import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner'
+import ErrorModal from '../../shared/components/UIElements/ErrorModal'
+
 import { VALIDATOR_EMAIL, VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE } from "../../shared/util/validators";
-import { AuthContext } from "../../shared/context/auth-context";
+
 import './Auth.css'
 
 const Auth = () => {
     const [isLogin, setIsLogin] = useState(true)
+
+    const { isLoading, error, sendRequest, clearError } = useHttpClient()
 
     const [formState, inputHandler, setFormData] = useForm(
         {
@@ -51,51 +59,90 @@ const Auth = () => {
         setIsLogin(prevMode => !prevMode)
     }
 
-    const authSubmitHandler = (event) => {
+    const authSubmitHandler = async (event) => {
         event.preventDefault()
-        console.log(formState.inputs);
-        authCtx.login()
+
+        if (isLogin) {
+            try {
+                const data = await sendRequest(
+                    'http://localhost:5000/api/users/login',
+                    'POST',
+                    JSON.stringify({
+                        email: formState.inputs.email.value,
+                        password: formState.inputs.password.value
+                    }),
+                    {
+                        'Content-Type': 'application/json'
+                    }
+                )
+
+                authCtx.login(data.user.id)
+            } catch (error) {
+            }
+
+        } else {
+            try {
+                const data = await sendRequest(
+                    'http://localhost:5000/api/users/signup',
+                    'POST',
+                    JSON.stringify({
+                        name: formState.inputs.name.value,
+                        email: formState.inputs.email.value,
+                        password: formState.inputs.password.value
+                    }),
+                    {
+                        'Content-Type': 'application/json'
+                    }
+                )
+                authCtx.login(data.user.id)
+            } catch (error) {
+            }
+        }
     }
 
     return (
-        <Card className='authentication' >
-            <h2>Login Required</h2>
-            <hr />
-            <form onSubmit={authSubmitHandler} >
-                {
-                    !isLogin &&
+        <>
+            <ErrorModal error={error} onClear={clearError} />
+            <Card className='authentication' >
+                {isLoading && <LoadingSpinner asOverlay />}
+                <h2>Login Required</h2>
+                <hr />
+                <form onSubmit={authSubmitHandler} >
+                    {
+                        !isLogin &&
+                        <Input
+                            element='input'
+                            id='name'
+                            type='text'
+                            label='Your Name'
+                            validators={[VALIDATOR_REQUIRE()]}
+                            errorText='Please enter your name'
+                            onInput={inputHandler}
+                        />
+                    }
                     <Input
                         element='input'
-                        id='name'
-                        type='text'
-                        label='Your Name'
-                        validators={[VALIDATOR_REQUIRE()]}
-                        errorText='Please enter your name'
+                        id='email'
+                        type='email'
+                        label='E-mail'
+                        validators={[VALIDATOR_EMAIL()]}
+                        errorText='Please enter a valid email address'
                         onInput={inputHandler}
                     />
-                }
-                <Input
-                    element='input'
-                    id='email'
-                    type='email'
-                    label='E-mail'
-                    validators={[VALIDATOR_EMAIL()]}
-                    errorText='Please enter a valid email address'
-                    onInput={inputHandler}
-                />
-                <Input
-                    element='input'
-                    id='password'
-                    type='password'
-                    label='Password'
-                    validators={[VALIDATOR_MINLENGTH(5)]}
-                    errorText='Please enter a valid password (min 5 characters)'
-                    onInput={inputHandler}
-                />
-                <Button type='submit' disabled={!formState.isValid} >Login</Button>
-            </form>
-            <Button inverse onClick={switchModeHandler} >{isLogin ? 'REGISTER' : 'LOG IN'}</Button>
-        </Card>
+                    <Input
+                        element='input'
+                        id='password'
+                        type='password'
+                        label='Password'
+                        validators={[VALIDATOR_MINLENGTH(6)]}
+                        errorText='Please enter a valid password (min 6 characters)'
+                        onInput={inputHandler}
+                    />
+                    <Button type='submit' disabled={!formState.isValid} >{isLogin ? 'Login' : 'Signup'}</Button>
+                </form>
+                <Button inverse onClick={switchModeHandler} >{isLogin ? 'REGISTER' : 'LOG IN'}</Button>
+            </Card>
+        </>
     )
 }
 

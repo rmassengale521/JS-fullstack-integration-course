@@ -10,6 +10,13 @@ const app = express()
 
 app.use(bodyParser.json())
 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')
+    next()
+})
+
 app.use('/api/places', placesRoutes)
 
 app.use('/api/users', usersRoutes)
@@ -29,7 +36,7 @@ app.use((err, req, res, next) => {
     })
 })
 
-mongoose.connect('mongodb+srv://mernprojectuser:r7i5gtOxxVGA3F2M@cluster0.hvmdtyd.mongodb.net/reactPlaces?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect('mongodb+srv://mernproject2:yg5mnkMj1mDoj2qD@cluster0.hvmdtyd.mongodb.net/mernPlaces?retryWrites=true&w=majority&appName=Cluster0')
     .then(() => {
         app.listen(5000)
     })

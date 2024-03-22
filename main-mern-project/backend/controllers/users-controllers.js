@@ -18,6 +18,7 @@ const getUsers = async (req, res, next) => {
 }
 
 const signup = async (req, res, next) => {
+
     const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
@@ -69,7 +70,7 @@ const login = async (req, res, next) => {
         return next(new HttpError('invalid credentials, could not log in', 401))
     }
 
-    res.json({ message: 'logged in' })
+    res.json({ message: 'logged in', user: existingUser.toObject({ getters: true }) })
 }
 
 module.exports = {

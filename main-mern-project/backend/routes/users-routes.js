@@ -20,7 +20,7 @@ router.post('/signup',
             .normalizeEmail()
             .isEmail(),
         check('password')
-            .isLength(5)
+            .isLength(6)
     ],
     signup)
 
