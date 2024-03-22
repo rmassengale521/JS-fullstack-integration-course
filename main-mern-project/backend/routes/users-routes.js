@@ -5,6 +5,8 @@ const {
     getUsers, signup, login
 } = require('../controllers/users-controllers');
 
+const fileUpload = require('../middleware/file-uplaod')
+
 const router = express.Router()
 
 // GET api/users
@@ -12,6 +14,7 @@ router.get('/', getUsers)
 
 // POST api/users/signup
 router.post('/signup',
+    fileUpload.single('image'),
     [
         check('name')
             .not()

@@ -7,6 +7,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 import Card from "../../shared/components/UIElements/Card";
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 import LoadingSpinner from '../../shared/components/UIElements/LoadingSpinner'
 import ErrorModal from '../../shared/components/UIElements/ErrorModal'
 
@@ -40,7 +41,8 @@ const Auth = () => {
             setFormData(
                 {
                     ...formState.inputs,
-                    name: undefined
+                    name: undefined,
+                    image: undefined
                 },
                 formState.inputs.email.isValid && formState.inputs.password.isValid
             )
@@ -50,6 +52,10 @@ const Auth = () => {
                     ...formState.inputs,
                     name: {
                         value: '',
+                        isValid: false
+                    },
+                    image: {
+                        value: null,
                         isValid: false
                     }
                 },
@@ -82,17 +88,17 @@ const Auth = () => {
 
         } else {
             try {
+                const formData = new FormData()
+                formData.append('email', formState.inputs.email.value)
+                formData.append('name', formState.inputs.name.value)
+                formData.append('password', formState.inputs.password.value)
+                formData.append('image', formState.inputs.image.value)
+
+
                 const data = await sendRequest(
                     'http://localhost:5000/api/users/signup',
                     'POST',
-                    JSON.stringify({
-                        name: formState.inputs.name.value,
-                        email: formState.inputs.email.value,
-                        password: formState.inputs.password.value
-                    }),
-                    {
-                        'Content-Type': 'application/json'
-                    }
+                    formData
                 )
                 authCtx.login(data.user.id)
             } catch (error) {
@@ -110,15 +116,18 @@ const Auth = () => {
                 <form onSubmit={authSubmitHandler} >
                     {
                         !isLogin &&
-                        <Input
-                            element='input'
-                            id='name'
-                            type='text'
-                            label='Your Name'
-                            validators={[VALIDATOR_REQUIRE()]}
-                            errorText='Please enter your name'
-                            onInput={inputHandler}
-                        />
+                        <>
+                            <Input
+                                element='input'
+                                id='name'
+                                type='text'
+                                label='Your Name'
+                                validators={[VALIDATOR_REQUIRE()]}
+                                errorText='Please enter your name'
+                                onInput={inputHandler}
+                            />
+                            <ImageUpload center id='image' onInput={inputHandler} errorText='Please provide an image' />
+                        </>
                     }
                     <Input
                         element='input'

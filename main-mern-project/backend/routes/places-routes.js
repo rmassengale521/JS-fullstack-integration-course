@@ -9,6 +9,8 @@ const {
     deletePlaceById
 } = require('../controllers/places-controllers')
 
+const fileUpload = require('../middleware/file-uplaod')
+
 const router = express.Router()
 
 
@@ -20,6 +22,7 @@ router.get('/user/:userId', getPlacesByUser)
 
 // POST /api/places
 router.post('/',
+    fileUpload.single('image'),
     [
         check('title')
             .not()
