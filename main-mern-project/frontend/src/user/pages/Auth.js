@@ -82,7 +82,7 @@ const Auth = () => {
                     }
                 )
 
-                authCtx.login(data.user.id)
+                authCtx.login(data.userId, data.token)
             } catch (error) {
             }
 
@@ -100,7 +100,7 @@ const Auth = () => {
                     'POST',
                     formData
                 )
-                authCtx.login(data.user.id)
+                authCtx.login(data.userId, data.token)
             } catch (error) {
             }
         }

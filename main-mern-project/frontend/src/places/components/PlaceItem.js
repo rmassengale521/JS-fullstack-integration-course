@@ -27,6 +27,7 @@ const PlaceItem = ({
     const [showDelete, setShowDelete] = useState(false)
 
     const { isLoading, error, sendRequest, clearError } = useHttpClient()
+    const authCtx = useContext(AuthContext)
 
     const openMapHandler = () => setShowMap(true)
     const closeMapHandler = () => setShowMap(false)
@@ -38,12 +39,19 @@ const PlaceItem = ({
     const confirmDelete = async () => {
         setShowDelete(false)
         try {
-            await sendRequest(`http://localhost:5000/api/places/${id}`, 'DELETE')
+            await sendRequest(
+                `http://localhost:5000/api/places/${id}`,
+                'DELETE',
+                null,
+                {
+                    'Authorization': `Bearer ${authCtx.token}`
+                }
+            )
             onDelete(id)
         } catch (error) { }
     }
 
-    const authCtx = useContext(AuthContext)
+
 
     return (
         <>
