@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken")
 
 const HttpError = require("../models/http-error")
+const { JWT_SECRET } = process.env
 
 module.exports = (req, res, next) => {
     if (req.method === 'OPTIONS') {
@@ -13,7 +14,7 @@ module.exports = (req, res, next) => {
             throw new Error('Authentication failed')
         }
 
-        const decodedToken = jwt.verify(token, 'shouldBeInEnv')
+        const decodedToken = jwt.verify(token, JWT_SECRET)
         req.userData = {
             userId: decodedToken.userId
         }
