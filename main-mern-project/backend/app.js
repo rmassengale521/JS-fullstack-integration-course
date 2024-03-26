@@ -4,6 +4,9 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+require("dotenv").config();
+
+const { DB_USER, DB_PASS, DB_NAME } = process.env
 
 const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes')
@@ -47,7 +50,7 @@ app.use((err, req, res, next) => {
     })
 })
 
-mongoose.connect('mongodb+srv://mernproject2:yg5mnkMj1mDoj2qD@cluster0.hvmdtyd.mongodb.net/mernPlaces?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect(`mongodb+srv://${DB_USER}:${DB_PASS}@cluster0.hvmdtyd.mongodb.net/${DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`)
     .then(() => {
         app.listen(5000)
     })

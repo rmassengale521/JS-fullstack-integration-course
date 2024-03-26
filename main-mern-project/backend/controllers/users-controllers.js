@@ -2,9 +2,9 @@ const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator')
 const jwt = require("jsonwebtoken")
 
-
 const HttpError = require('../models/http-error');
 const User = require('../models/users')
+const { JWT_SECRET } = process.env
 
 
 const getUsers = async (req, res, next) => {
@@ -63,11 +63,13 @@ const signup = async (req, res, next) => {
 
     let token
     try {
-        token = jwt.sign({
-            userId: newUser.id, email: newUser.email
-        },
-            'shouldBeInEnv',
-            { expiresIn: '1h' })
+        token = jwt.sign(
+            {
+                userId: newUser.id, email: newUser.email
+            },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        )
     } catch (error) {
         return next(new HttpError('Failed to create user', 500))
     }
@@ -102,11 +104,13 @@ const login = async (req, res, next) => {
 
     let token
     try {
-        token = jwt.sign({
-            userId: existingUser.id, email: existingUser.email
-        },
-            'shouldBeInEnv',
-            { expiresIn: '1h' })
+        token = jwt.sign(
+            {
+                userId: existingUser.id, email: existingUser.email
+            },
+            JWT_SECRET,
+            { expiresIn: '1h' }
+        )
     } catch (error) {
         return next(new HttpError('Something went wrong, could not login user', 500))
     }

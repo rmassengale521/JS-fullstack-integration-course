@@ -2,7 +2,7 @@ const axios = require("axios");
 
 const HttpError = require("../models/http-error");
 
-const API_KEY = "pk.e4a35f10b64a2d67017363f95969c194";
+const { API_KEY } = process.env;
 
 const getCoordsForAddress = async (address) => {
     const response = await axios.get(
