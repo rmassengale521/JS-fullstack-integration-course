@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
 
 mongoose.connect(`mongodb+srv://${DB_USER}:${DB_PASS}@cluster0.hvmdtyd.mongodb.net/${DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`)
     .then(() => {
-        app.listen(5000)
+        app.listen(process.env.PORT || 5000)
     })
     .catch((err) => {
         console.error(err);
